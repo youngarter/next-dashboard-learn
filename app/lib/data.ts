@@ -9,7 +9,14 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+// Initialize the Postgres client with SSL configuration
+const sql = postgres(process.env.POSTGRES_URL!, {
+  ssl: {
+    rejectUnauthorized: false, // necessary for some cloud providers
+  },
+});
+
+// const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchRevenue() {
   try {
@@ -17,11 +24,11 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     //console.log('Fetching revenue data...');
-   // await new Promise((resolve) => setTimeout(resolve, 6000));
+    // await new Promise((resolve) => setTimeout(resolve, 6000));
 
     const data = await sql<Revenue[]>`SELECT * FROM revenue`;
 
-     console.log('Data fetch completed after 3 seconds.');
+    console.log('Data fetch completed after 3 seconds.');
 
     return data;
   } catch (error) {
